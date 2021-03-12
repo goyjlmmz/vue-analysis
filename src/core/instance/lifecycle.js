@@ -59,9 +59,11 @@ export function lifecycleMixin (Vue: Class<Component>) {
     // based on the rendering backend used.
     if (!prevVnode) {
       // initial render
+      // 首次渲染
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
       // updates
+      // 更新时候渲染
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
     activeInstance = prevActiveInstance
@@ -180,6 +182,7 @@ export function mountComponent (
     }
   } else {
     updateComponent = () => {
+      // vm._render() 返回  VNode   vue-analysis/src/core/instance/render.js ---> Vue.prototype._render
       vm._update(vm._render(), hydrating)
     }
   }
@@ -187,6 +190,8 @@ export function mountComponent (
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
+
+  // 渲染watcher 
   new Watcher(vm, updateComponent, noop, {
     before () {
       if (vm._isMounted) {

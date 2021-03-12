@@ -28,7 +28,7 @@ export function initMixin (Vue: Class<Component>) {
 
     // a flag to avoid this being observed
     vm._isVue = true
-    // merge options
+    // merge options 合并options  将我们传入的options合并到 $options 上  可以通过 this.$options.el / .data 访问
     if (options && options._isComponent) {
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
@@ -42,6 +42,7 @@ export function initMixin (Vue: Class<Component>) {
       )
     }
     /* istanbul ignore else */
+    // _renderProxy 区分环境处理
     if (process.env.NODE_ENV !== 'production') {
       initProxy(vm)
     } else {
@@ -51,9 +52,10 @@ export function initMixin (Vue: Class<Component>) {
     vm._self = vm
     initLifecycle(vm)
     initEvents(vm)
-    initRender(vm)
+    initRender(vm) // vue-analysis/src/core/instance/render.js   initRender()
     callHook(vm, 'beforeCreate')
     initInjections(vm) // resolve injections before data/props
+    // 处理props methods data 中定义的属性和方法
     initState(vm)
     initProvide(vm) // resolve provide after data/props
     callHook(vm, 'created')
@@ -65,7 +67,9 @@ export function initMixin (Vue: Class<Component>) {
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
 
+    // 判断有没有传入 el 
     if (vm.$options.el) {
+      // 挂载
       vm.$mount(vm.$options.el)
     }
   }

@@ -111,9 +111,11 @@ function initProps (vm: Component, propsOptions: Object) {
 
 function initData (vm: Component) {
   let data = vm.$options.data
+  // 判断我们的data 是 object还是function  function的情况下要call一下
   data = vm._data = typeof data === 'function'
     ? getData(data, vm)
     : data || {}
+    // isPlainObject 判断是不是对象  [object Object]
   if (!isPlainObject(data)) {
     data = {}
     process.env.NODE_ENV !== 'production' && warn(
@@ -123,6 +125,7 @@ function initData (vm: Component) {
     )
   }
   // proxy data on instance
+  // props 与 data 中定义的key 对比，不能重复定义相同属性，因为最终都要挂载到当前实例上
   const keys = Object.keys(data)
   const props = vm.$options.props
   const methods = vm.$options.methods
@@ -130,6 +133,7 @@ function initData (vm: Component) {
   while (i--) {
     const key = keys[i]
     if (process.env.NODE_ENV !== 'production') {
+      // hasOwn 使用 Object.prototype.hasOwnProperty() 方法 判断对象自身属性中是否具有指定属性
       if (methods && hasOwn(methods, key)) {
         warn(
           `Method "${key}" has already been defined as a data property.`,

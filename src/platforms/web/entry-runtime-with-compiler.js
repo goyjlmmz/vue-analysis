@@ -14,11 +14,15 @@ const idToTemplate = cached(id => {
   return el && el.innerHTML
 })
 
+// vue-analysis/src/platforms/web/runtime/index.js 中定义的 $mount 方法  缓存起来
 const mount = Vue.prototype.$mount
+
+// compiler版本的vue 对 $mount 方法进行了重写
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
+  // query 方法  判断传入的el 是字符串还是DOM对象
   el = el && query(el)
 
   /* istanbul ignore if */
@@ -31,6 +35,7 @@ Vue.prototype.$mount = function (
 
   const options = this.$options
   // resolve template/el and convert to render function
+  // 把template或者el转换为 render function
   if (!options.render) {
     let template = options.template
     if (template) {
@@ -62,6 +67,7 @@ Vue.prototype.$mount = function (
         mark('compile')
       }
 
+      // template 编译成render function
       const { render, staticRenderFns } = compileToFunctions(template, {
         shouldDecodeNewlines,
         shouldDecodeNewlinesForHref,
@@ -78,7 +84,7 @@ Vue.prototype.$mount = function (
       }
     }
   }
-  return mount.call(this, el, hydrating)
+  return mount.call(this, el, hydrating) // 调用上述缓存的 mount 方法
 }
 
 /**

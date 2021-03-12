@@ -1,5 +1,6 @@
 /* @flow */
 
+// 全局config  属性
 import config from '../config'
 import { initUse } from './use'
 import { initMixin } from './mixin'
@@ -7,6 +8,7 @@ import { initExtend } from './extend'
 import { initAssetRegisters } from './assets'
 import { set, del } from '../observer/index'
 import { ASSET_TYPES } from 'shared/constants'
+// 内置组件  keep-alive
 import builtInComponents from '../components/index'
 
 import {
@@ -17,6 +19,7 @@ import {
   defineReactive
 } from '../util/index'
 
+// 全局api  Vue上挂载一些全局属性
 export function initGlobalAPI (Vue: GlobalAPI) {
   // config
   const configDef = {}
@@ -45,6 +48,9 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   Vue.nextTick = nextTick
 
   Vue.options = Object.create(null)
+  // vue-analysis/src/shared/constants.js
+  // ASSET_TYPES = ['component','directive','filter']
+  // 在Vue.options下定义三个方法
   ASSET_TYPES.forEach(type => {
     Vue.options[type + 's'] = Object.create(null)
   })
@@ -55,8 +61,13 @@ export function initGlobalAPI (Vue: GlobalAPI) {
 
   extend(Vue.options.components, builtInComponents)
 
+  // 创建全局 use 方法
   initUse(Vue)
+  // 全局 mixin 方法
   initMixin(Vue)
+  // 全局 extend 方法
   initExtend(Vue)
+  // ['component','directive','filter']
+  // 在Vue下定义这三个全局方法
   initAssetRegisters(Vue)
 }
