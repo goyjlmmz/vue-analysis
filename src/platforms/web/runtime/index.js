@@ -38,6 +38,7 @@ Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
+  // 修正
   el = el && inBrowser ? query(el) : undefined
   return mountComponent(this, el, hydrating) // vue-analysis/src/core/instance/lifecycle.js
 }

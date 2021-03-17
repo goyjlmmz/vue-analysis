@@ -109,6 +109,7 @@ export function createComponent (
     return
   }
 
+  // context.$options._base == vm.$options._base ==> src/core/global-api/index.js Vue.options._base = Vue
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor
@@ -183,6 +184,7 @@ export function createComponent (
   }
 
   // install component management hooks onto the placeholder node
+  // 给组件注册钩子
   installComponentHooks(data)
 
   // return a placeholder vnode

@@ -27,7 +27,7 @@ export function initRender (vm: Component) {
   // so that we get proper render context inside it.
   // args order: tag, data, children, normalizationType, alwaysNormalize
   // internal version is used by render functions compiled from templates
-  // 1、template生成的render方法
+  // 1、template编译生成的render方法
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
   // normalization is always applied for the public version, used in
   // user-written render functions.
@@ -85,6 +85,7 @@ export function renderMixin (Vue: Class<Component>) {
       // 生成VNode
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
+      // 一系列降级处理
       handleError(e, vm, `render`)
       // return error render result,
       // or previous vnode to prevent render error causing blank component
@@ -106,6 +107,7 @@ export function renderMixin (Vue: Class<Component>) {
     }
     // return empty vnode in case the render function errored out
     if (!(vnode instanceof VNode)) {
+      // 不属于vnode的实例 && 多个根节点 array数据类型   开发环境警告处理
       if (process.env.NODE_ENV !== 'production' && Array.isArray(vnode)) {
         warn(
           'Multiple root nodes returned from render function. Render function ' +

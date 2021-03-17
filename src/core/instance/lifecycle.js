@@ -60,6 +60,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
     if (!prevVnode) {
       // initial render
       // 首次渲染
+      // vue-analysis/src/core/vdom/patch.js 中定义的 patch 方法
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
       // updates
@@ -163,6 +164,7 @@ export function mountComponent (
 
   let updateComponent
   /* istanbul ignore if */
+  // 区分环境执行 updateComponent 方法
   if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
     updateComponent = () => {
       const name = vm._name
@@ -183,6 +185,7 @@ export function mountComponent (
   } else {
     updateComponent = () => {
       // vm._render() 返回  VNode   vue-analysis/src/core/instance/render.js ---> Vue.prototype._render
+      // vm._update()
       vm._update(vm._render(), hydrating)
     }
   }
@@ -191,7 +194,8 @@ export function mountComponent (
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
 
-  // 渲染watcher 
+  // 渲染watcher
+  // src/core/observer/watcher.js  ---> class Watch
   new Watcher(vm, updateComponent, noop, {
     before () {
       if (vm._isMounted) {
