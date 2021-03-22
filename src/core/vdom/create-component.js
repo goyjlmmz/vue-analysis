@@ -109,16 +109,19 @@ export function createComponent (
     return
   }
 
+  // vue init 过程中有合并options的过程，此时的baseCtor指的就是Vue构造器
   // context.$options._base == vm.$options._base ==> src/core/global-api/index.js Vue.options._base = Vue
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor
+  // 通过Vue.extend 创建组件构造器  /src/core/global-api/extend.js
   if (isObject(Ctor)) {
     Ctor = baseCtor.extend(Ctor)
   }
 
   // if at this stage it's not a constructor or an async component factory,
   // reject.
+  // 判断此处的Ctor如果不是function类型，抛出警告
   if (typeof Ctor !== 'function') {
     if (process.env.NODE_ENV !== 'production') {
       warn(`Invalid Component definition: ${String(Ctor)}`, context)
@@ -183,12 +186,15 @@ export function createComponent (
     }
   }
 
+
   // install component management hooks onto the placeholder node
-  // 给组件注册钩子
+  // 给组件注册钩子 init、prepatch、insert、destroy 四个钩子
   installComponentHooks(data)
 
   // return a placeholder vnode
   const name = Ctor.options.name || tag
+
+  // 注意第三个参数是undefined （children） 组件vnode的children参数为undefined，会在patch过程中有用
   const vnode = new VNode(
     `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
     data, undefined, undefined, undefined, context,
@@ -227,11 +233,13 @@ export function createComponentInstanceForVnode (
 
 function installComponentHooks (data: VNodeData) {
   const hooks = data.hook || (data.hook = {})
+  // hooksToMerge  ==>   ['init','prepatch','insert','destroy']
   for (let i = 0; i < hooksToMerge.length; i++) {
     const key = hooksToMerge[i]
     const existing = hooks[key]
     const toMerge = componentVNodeHooks[key]
     if (existing !== toMerge && !(existing && existing._merged)) {
+      // mergeHook 小技巧，如果data.hook已经存在同名的钩子，先后执行两个钩子
       hooks[key] = existing ? mergeHook(toMerge, existing) : toMerge
     }
   }
