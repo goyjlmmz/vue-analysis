@@ -30,6 +30,7 @@ export function initRender (vm: Component) {
   // 1、template编译生成的render方法
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
   // normalization is always applied for the public version, used in
+
   // user-written render functions.
   // 2、用户手写的render方法
   vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)

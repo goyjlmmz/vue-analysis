@@ -48,6 +48,9 @@ export function initLifecycle (vm: Component) {
 }
 
 export function lifecycleMixin (Vue: Class<Component>) {
+  // _update  --->  把vnode渲染成真实dom
+  // 1、首次渲染会调用
+  // 2、数据改变驱动视图变化时候会调用
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
     const prevEl = vm.$el
@@ -60,7 +63,8 @@ export function lifecycleMixin (Vue: Class<Component>) {
     if (!prevVnode) {
       // initial render
       // 首次渲染
-      // vue-analysis/src/core/vdom/patch.js 中定义的 patch 方法
+      // vue-analysis/src/platforms/web/runtime/index.js
+      // 最终指向vue-analysis/src/core/vdom/patch.js 中定义的 patch 方法
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
       // updates

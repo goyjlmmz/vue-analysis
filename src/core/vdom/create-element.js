@@ -92,9 +92,11 @@ export function _createElement (
   }
   if (normalizationType === ALWAYS_NORMALIZE) {
     // 递归拍平children数组
+    // 用户手写的render
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) {
     // 拍平children数组  一层
+    // template转换的render
     children = simpleNormalizeChildren(children)
   }
   let vnode, ns
