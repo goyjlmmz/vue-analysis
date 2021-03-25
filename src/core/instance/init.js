@@ -33,6 +33,8 @@ export function initMixin (Vue: Class<Component>) {
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
       // internal component options needs special treatment.
+
+      // 组件merger options的逻辑
       initInternalComponent(vm, options)
     } else {
       vm.$options = mergeOptions(
@@ -67,7 +69,8 @@ export function initMixin (Vue: Class<Component>) {
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
 
-    // 判断有没有传入 el 
+    // 判断有没有传入 el
+    // 组件渲染的时候是没有el的，这里的逻辑不会执行，子组件的 _init 方法执行完成，继续执行data.hook.init 方法，手动调用 $mount 方法
     if (vm.$options.el) {
       // 挂载
       vm.$mount(vm.$options.el)
@@ -75,12 +78,14 @@ export function initMixin (Vue: Class<Component>) {
   }
 }
 
+// 组件merge options的逻辑
 export function initInternalComponent (vm: Component, options: InternalComponentOptions) {
+  // vm 是当前组件 new 之后的实例
   const opts = vm.$options = Object.create(vm.constructor.options)
   // doing this because it's faster than dynamic enumeration.
-  const parentVnode = options._parentVnode
-  opts.parent = options.parent
-  opts._parentVnode = parentVnode
+  const parentVnode = options._parentVnode // _parentVnode 当前组件vnode
+  opts.parent = options.parent // opts.parent 当前组件实例的父vm实例
+  opts._parentVnode = parentVnode // opts._parentVnode 当前组件实例
 
   const vnodeComponentOptions = parentVnode.componentOptions
   opts.propsData = vnodeComponentOptions.propsData
@@ -92,6 +97,8 @@ export function initInternalComponent (vm: Component, options: InternalComponent
     opts.render = options.render
     opts.staticRenderFns = options.staticRenderFns
   }
+
+  // ====> 看initLifecycle的逻辑
 }
 
 export function resolveConstructorOptions (Ctor: Class<Component>) {

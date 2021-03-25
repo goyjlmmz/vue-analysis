@@ -22,18 +22,19 @@ export let activeInstance: any = null
 export let isUpdatingChildComponent: boolean = false
 
 export function initLifecycle (vm: Component) {
-  const options = vm.$options
+  // 主要建立父子组件之间关系
+  const options = vm.$options // options 子组件实例的options选项，里面的parent保留了父级vm实例，保留操作在createComponentInstanceForVnode方法中通过activeInstance实现
 
   // locate first non-abstract parent
-  let parent = options.parent
+  let parent = options.parent // parent是当前组件实例的父组件vm实例，通过create-component.js 中的 createComponentInstanceForVnode 方法的参数传递
   if (parent && !options.abstract) {
     while (parent.$options.abstract && parent.$parent) {
       parent = parent.$parent
     }
-    parent.$children.push(vm)
+    parent.$children.push(vm) // 这时候的vm是当前子组件实例，被父组件parent通过$children push进去
   }
 
-  vm.$parent = parent
+  vm.$parent = parent // 同时把子组件的$parent属性指向父组件parent
   vm.$root = parent ? parent.$root : vm
 
   vm.$children = []
@@ -56,7 +57,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
     const prevEl = vm.$el
     const prevVnode = vm._vnode
     const prevActiveInstance = activeInstance
-    activeInstance = vm
+    activeInstance = vm // 把当前激活的vm实例用全局变量 activeInstance 保存 并在create-component时候作为参数传递
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.

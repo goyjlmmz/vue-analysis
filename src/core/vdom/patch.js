@@ -141,6 +141,8 @@ export function createPatchFunction (backend) {
     }
 
     vnode.isRootInsert = !nested // for transition enter check
+
+    // 创建组件 此处逻辑只有是组件patch的时候 if代码块中的判断条件才是true 并 return
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
@@ -207,11 +209,13 @@ export function createPatchFunction (backend) {
     }
   }
 
+  // 普通元素patch和组件patch的返回结果不同
   function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
     let i = vnode.data
     if (isDef(i)) {
       const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
       if (isDef(i = i.hook) && isDef(i = i.init)) {
+        // 判断data.hook  ==>  data.hook.init  如果有init方法 执行init方法
         i(vnode, false /* hydrating */)
       }
       // after calling the init hook, if the vnode is a child component

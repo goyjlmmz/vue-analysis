@@ -44,10 +44,14 @@ const componentVNodeHooks = {
       const mountedNode: any = vnode // work around flow
       componentVNodeHooks.prepatch(mountedNode, mountedNode)
     } else {
+      // createComponentInstanceForVnode 方法返回一个vm实例，即当前组件实例
       const child = vnode.componentInstance = createComponentInstanceForVnode(
         vnode,
         activeInstance
       )
+      // 因为子组件没有el， _init 中不会主动执行 $mount方法，这里通过手动执行$mount方法，
+      // 这时候的组件已经通过编译有render方法了 ====> 执行到Vue.prototype._render方法
+      // 通过 const { render, _parentVnode } = vm.$options 把createComponentInstanceForVnode方法执行过程中的占位符_parentVnode赋值vm.$vnode = _parentVnode
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
     }
   },
@@ -213,14 +217,15 @@ export function createComponent (
   return vnode
 }
 
+// createComponentInstanceForVnode 方法返回一个vm实例，即当前组件实例
 export function createComponentInstanceForVnode (
   vnode: any, // we know it's MountedComponentVNode but flow doesn't
   parent: any, // activeInstance in lifecycle state
 ): Component {
   const options: InternalComponentOptions = {
     _isComponent: true,
-    _parentVnode: vnode,
-    parent
+    _parentVnode: vnode, // vnode:  当前组件vnode 理解为占位符vnode
+    parent // parent: 当前激活的实例对象vm，即当前组件的父级实例
   }
   // check inline-template render functions
   const inlineTemplate = vnode.data.inlineTemplate
@@ -228,6 +233,10 @@ export function createComponentInstanceForVnode (
     options.render = inlineTemplate.render
     options.staticRenderFns = inlineTemplate.staticRenderFns
   }
+
+  // 在生成vnode的过程中，组件vnode实例上已经有了componentOption这个属性，这个属性包含了该组件的构造函数
+  // vnode.componentOptions.Ctor 即 当前组件构造器  执行 _init 等一系列操作
+  // _init 过程中的重点！！！ ===> src/core/instance/init.js 中 initMixin 中的 _init 方法
   return new vnode.componentOptions.Ctor(options)
 }
 
